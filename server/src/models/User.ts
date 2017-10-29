@@ -1,4 +1,4 @@
-import { setPassword, comparePasswords } from '../extra/hash-salt';
+import { setPassword, comparePasswords } from '../tools/hash-salt';
 import { Schema, SchemaTypes, model } from 'mongoose';
 
 let userSchema = new Schema({
@@ -19,13 +19,6 @@ let userSchema = new Schema({
         required: true,
         unique: true
     },
-    adress: String,
-    phone: Number,
-    clientNumber: {
-        type: String,
-        required: false,
-        unique: true
-    },
     accounts:[
         {
             type: SchemaTypes.ObjectId,
@@ -33,6 +26,9 @@ let userSchema = new Schema({
         }
     ]
 });
+userSchema.methods.getPlainUser = (user: __CustomTypes.User) => {
+    let {name, password, email, createdAt, updatedAt, accounts} = user
+    return {name, password, email, createdAt, updatedAt, accounts};
+};
 userSchema.methods.comparePasswords = comparePasswords;
-
 export default model('User', userSchema);

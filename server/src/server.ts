@@ -1,12 +1,12 @@
-import { strategyConfig } from './extra/jwt-config';
 import * as compression from 'compression';
 import * as bodyParser from 'body-parser';
 import * as mongoose from 'mongoose';
-import * as passport from 'passport';
+import { MONGO_URI } from './const';
 import * as express from 'express';
 import * as helmet from 'helmet';
+import router from './routers';
 import * as cors from 'cors';
-
+import auth from './auth';
 
 // import Routers
 import userRouter from './routers/userRouter';
@@ -19,12 +19,10 @@ class Server {
     constructor() {
         this.app = express();
         this.config();
-        this.routes();
     }
     public config(): void{
-        // Set up mongoose
-        const MONGO_URI = 'mongodb://localhost/Currency';
-        mongoose.connect( MONGO_URI || process.env.MONGODB_URI, {
+        // Connection to the DB
+        mongoose.connect( MONGO_URI, {
             useMongoClient: true
         }, (err) => {
             if(err){
@@ -40,17 +38,12 @@ class Server {
         this.app.use(compression());
         this.app.use(helmet());
         this.app.use(cors());
-        // Passport set up
-        this.app.use(passport.initialize());
-        strategyConfig(passport);
-
-        
-    }
-    public routes(): void {
-        let router: express.Router;
-        router = express.Router();
+        // Authentication Set Up
+        this.app.use(auth);
+        // Router handler
         this.app.use('/', router);
-        this.app.use('/api/v1/user', userRouter);
+        // Static files
+        //this.app.use('/', express.static('client/build'));
     }
 }
 

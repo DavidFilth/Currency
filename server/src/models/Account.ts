@@ -13,15 +13,6 @@ let AccountSchema = new Schema({
         default: 0,
         required: true
     },
-    number: {
-        type: String,
-        required: false,
-        unique: true
-    },
-    secretNumber:{
-        type: String,
-        required: true
-    },
     creditLimit:{
         type: Number,
         required: true,

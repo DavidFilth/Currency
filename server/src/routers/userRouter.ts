@@ -1,6 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { options } from '../extra/jwt-config';
-import * as jwt from 'jsonwebtoken';
+import JWTStrategy from '../auth/jwt-auth';
 import User from '../models/User';
 
 class UserRouter {
@@ -9,13 +8,16 @@ class UserRouter {
         this.router = Router();
         this.routes();
     }
+    routes(): void {
+        this.router.post('/register', this.createUser);
+        this.router.post('/login', this.login);
+    }
     public createUser(req: Request, res: Response): void {
-        let {name, email, password, adress, phone } = req.body as __CustomTypes.newUser;
+        console.log('request made = ', req.body);
+        let {name, email, password } = req.body as __CustomTypes.newUser;
         let createdAt = new Date();
-        let newUser = new User({ name, email, password, adress, phone, createdAt,
-            updatedAt: createdAt,
-            clientNumber: 10
-        }).save((err, user) => {
+        new User({ name, email, password, createdAt, updatedAt: createdAt})
+        .save((err, user) => {
             let data = err ? err : user;
             let status = res.statusCode;
             if (err) {
@@ -25,16 +27,15 @@ class UserRouter {
         });
     }
     public login(req: Request, res: Response) {
-        let { clientNumber, password } = req.body as __CustomTypes.loginRequest; 
-        User.findOne({clientNumber}).exec((err, user: __CustomTypes.User) => {
+        let { email, password } = req.body as __CustomTypes.loginRequest;
+        User.findOne({email}).exec((err, user: __CustomTypes.User) => {
             if (err) {
                 res.send(err);
             } else if (!user) {
                 res.send({success: false, message: 'Authentication failed. User not found'});
             } else {
                 if (user.comparePasswords(password, user.password)) {
-                    let token = jwt.sign(user, options.secretOrKey, {expiresIn: 300});
-                    res.json({success: true, token: 'JWT ' + token});
+                    res.json({success: true, token: JWTStrategy.getToken(user)});
                 } else {
                     res.send({success: false, message: 'Authentication failed. Passwords did not match'});
                 }
@@ -42,14 +43,8 @@ class UserRouter {
         });
     }
     public updateUser(req: Request, res: Response) {
-
     }
     public deleteUser(req: Request, res: Response) {
-
-    }
-    public routes(): void {
-        this.router.post('/register', this.createUser);
-        this.router.post('/login', this.login);
     }
 }
 
