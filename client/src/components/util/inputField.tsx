@@ -3,12 +3,17 @@ import * as React from 'react';
 import './inputField.css';
 
 export default class InputField extends React.Component<__CustomTypes.InputFieldProps> {
+    private pristine: boolean = false;
     constructor() {
         super();
         this.shouldDisplayError = this.shouldDisplayError.bind(this);
+        this.onFocusHandler = this.onFocusHandler.bind(this);
+    }
+    onFocusHandler() {
+        this.pristine = true;
     }
     shouldDisplayError(): boolean {
-        return this.props.showError && this.props.errorText !== '';
+        return this.pristine && this.props.errorText !== '';
     }
     render() {
         let error: boolean = this.shouldDisplayError();
@@ -30,9 +35,10 @@ export default class InputField extends React.Component<__CustomTypes.InputField
                                 type={this.props.type || 'text'}
                                 onChange={this.props.onFieldChange}
                                 className={'form-control ' + (error ? 'is-invalid' : '')}
-                                value={this.props.text}
+                                value={this.props.value}
                                 name={this.props.name}
                                 id={this.props.id}
+                                onFocus={this.onFocusHandler}
                             />
                         </div>
                     </div>

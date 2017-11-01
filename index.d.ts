@@ -15,12 +15,17 @@ declare namespace __CustomTypes {
         email: string;
         password: string;
     }
-    export interface SignupProps {
-        onSubmitHandler(): void;
-        onChangeHandler(): void;
+    export interface SignUpProps {
     }
-    export interface SignupState extends newUser {
-        confirmPass: string;
+    export interface SignUpState extends validationObject {
+        value: newUser & {confirmPass: string}
+    }
+    export interface LoginCompState extends validationObject {
+        value: loginRequest;
+    }
+    export interface validationObject {
+        isInvalid: boolean;
+        validationErrors: object;
     }
     export interface optionallyDisplayed {
         display: boolean;
@@ -28,17 +33,15 @@ declare namespace __CustomTypes {
     export interface InputFieldProps {
         onFieldChange(e: any) : void;
         placeholder?: string;
-        showError: boolean;
         errorText: string;
         addon?: string;
         label?: string;
         type?: string;
-        text?: string;
         name?: string;
+        value: string;
         id?: string;
     }
-    export interface loginCompState extends loginRequest {
-        isValid: boolean;
-        validationErrors: object;
-    }
+    export type ErrorDisplayer = (f: string) => string;
+    export type Rule = (t: string, s?: Object) => ErrorDisplayer | null;
+    export type Runner = (state: object) => object | null;
 } 

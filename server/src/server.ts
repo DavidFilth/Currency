@@ -33,7 +33,7 @@ class Server {
         });
 
         // Initial configuration
-        this.app.use(bodyParser.urlencoded({ extended: true}));
+        this.app.use(bodyParser.urlencoded({ extended: false}));
         this.app.use(bodyParser.json());
         this.app.use(compression());
         this.app.use(helmet());
@@ -43,7 +43,7 @@ class Server {
         // Router handler
         this.app.use('/', router);
         // Static files
-        //this.app.use('/', express.static('client/build'));
+        this.app.use('/', express.static('client/build'));
     }
 }
 

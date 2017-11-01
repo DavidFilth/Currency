@@ -1,9 +1,12 @@
-import { Route, Redirect, Switch } from 'react-router';
-import { BrowserRouter } from 'react-router-dom';
+import PrivateRoute from './components/privateRoute/privateRoute';
+import { BrowserRouter, Route, Switch, } from 'react-router-dom';
+import Dashboard from './components/dashboard/dashboard';
 import Signup from './components/signup/signup';
 import Navbar from './components/navbar/navbar';
-import Login from './components/login/login';
+import Logout from './components/userLog/logout';
+import Login from './components/userLog/login';
 import Home from './components/home/home';
+
 import * as React from 'react';
 
 class App extends React.Component {
@@ -17,7 +20,8 @@ class App extends React.Component {
               <Route exact={true} path="/" component={Home} />
               <Route path="/register" component={Signup} />
               <Route path="/login" component={Login} />
-              <Redirect path="*" to="/" />
+              <Route path="/logout" component={Logout}/>
+              <PrivateRoute path="/dashboard" component={Dashboard} />
             </Switch>
           </Navbar>
         </BrowserRouter>

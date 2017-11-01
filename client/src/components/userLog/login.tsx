@@ -1,6 +1,10 @@
-import { run, ruleRunnner, rules } from '../validation';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { run, ruleRunnner } from '../../services/validation';
+import * as rules from '../../services/validation/rules';
 import * as update from 'immutability-helper';
-import InputField from '../formfield/inputField';
+import userApi from '../../services/api/user';
+import InputField from '../util/inputField';
+import auth from '../../services/auth';
 import * as React from 'react';
 
 const fieldValidations = [
@@ -8,24 +12,29 @@ const fieldValidations = [
     ruleRunnner('password', 'Password', rules.required, rules.minLength(4))
 ];
 
-class Login extends React.Component<{}, __CustomTypes.loginCompState > {
+class Login extends React.Component<RouteComponentProps<{}>, __CustomTypes.LoginCompState > {
     constructor() {
         super();
         this.handleFieldChanged = this.handleFieldChanged.bind(this);
         this.handleSubmitClicked = this.handleSubmitClicked.bind(this);
         this.errorFor = this.errorFor.bind(this);
         this.state = {
-            isValid: true,
+            isInvalid: true,
             validationErrors: {},
-            email: '',
-            password: ''
+            value: {
+                email: '',
+                password: ''
+            }
         };
     }
     componentWillMount() {
+        if (auth.isAutenticated()) {
+            this.props.history.push('/dashboard');
+        }
         let validators = run(this.state, fieldValidations);
         this.setState({
             validationErrors: validators,
-            isValid: Object.keys(validators).length > 0
+            isInvalid: Object.keys(validators).length > 0
         });
     }
     errorFor(field: string) {
@@ -34,18 +43,26 @@ class Login extends React.Component<{}, __CustomTypes.loginCompState > {
     handleFieldChanged(field: string) {
         return (e: React.ChangeEvent<HTMLInputElement>) => {
             let newState = update(this.state, {
-                [field]: {$set: e.target.value}
-            }) as __CustomTypes.loginCompState;
-            newState.validationErrors = run(newState, fieldValidations);
-            newState.isValid = Object.keys(newState.validationErrors).length > 0;
+                value: {
+                    [field]: {$set: e.target.value}
+                }
+            });
+            newState.validationErrors = run(newState.value, fieldValidations);
+            newState.isInvalid = Object.keys(newState.validationErrors).length > 0;
             this.setState(newState);
         };
     }
     handleSubmitClicked(e: React.UIEvent<HTMLFormElement>) {
+        userApi.login(this.state.value).subscribe((res) => {
+            if (res.token) {
+                auth.authenticate(res.token.slice(4));
+                this.props.history.push('/dashboard');
+            }
+        });
         e.preventDefault();
-        console.log(this.state);
     }
     render() {
+        let { email, password } = this.state.value;
         return (
             <div className="container">
                 <form 
@@ -61,23 +78,21 @@ class Login extends React.Component<{}, __CustomTypes.loginCompState > {
                         </div>
                     </div>
                     <InputField
-                        placeholder="Juan"
-                        showError={this.state.isValid}
+                        placeholder="a@b.com"
                         errorText={this.errorFor('email')}
                         label="E-mail"
                         addon="fa-at"
                         type="email"
-                        text={this.state.email}
+                        value={email}
                         onFieldChange={this.handleFieldChanged('email')}
                     />
                     <InputField
                         placeholder="1234"
-                        showError={this.state.isValid}
                         errorText={this.errorFor('password')}
                         label="Password"
                         addon="fa-key"
                         type="password"
-                        text={this.state.password}
+                        value={password}
                         onFieldChange={this.handleFieldChanged('password')}
                     />
                     <div className="row" style={{paddingTop: '1rem'}}>
@@ -86,7 +101,7 @@ class Login extends React.Component<{}, __CustomTypes.loginCompState > {
                             <button 
                                 type="submit" 
                                 className="btn btn-primary btn-lg btn-block"
-                                disabled={this.state.isValid}
+                                disabled={this.state.isInvalid}
                             >
                                 <i className="fa fa-sign-in"/> Login
                             </button>
@@ -98,4 +113,4 @@ class Login extends React.Component<{}, __CustomTypes.loginCompState > {
     }
 }
 
-export default Login;
+export default withRouter(Login);

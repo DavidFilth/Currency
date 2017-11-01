@@ -11,9 +11,12 @@ class UserRouter {
     routes(): void {
         this.router.post('/register', this.createUser);
         this.router.post('/login', this.login);
+        this.router.get('/test', this.test);
+    }
+    private test(req: Request, res: Response){
+        res.send({secret: 'Tu mama'});
     }
     public createUser(req: Request, res: Response): void {
-        console.log('request made = ', req.body);
         let {name, email, password } = req.body as __CustomTypes.newUser;
         let createdAt = new Date();
         new User({ name, email, password, createdAt, updatedAt: createdAt})
