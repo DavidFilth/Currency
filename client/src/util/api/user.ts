@@ -12,6 +12,10 @@ export default (function() {
         login(user: __CustomTypes.loginRequest) {
             return http.post('api/v1/user/login', JSON.stringify(user), headers)
                 .map((res) => res.response);
+        },
+        getUser() {
+            return http.get('api/v1/user/getuser')
+                .map((res) => res.response);
         }
     };
 })();

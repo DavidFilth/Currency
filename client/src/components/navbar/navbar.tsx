@@ -1,38 +1,36 @@
 import OptionallyDisplayed from '../util/optionallyDisplayed';
 import { NavLink } from 'react-router-dom';
-import auth from '../../services/auth';
 import * as React from 'react';
 
-export default class Navbar extends React.Component {
+export default class Navbar extends React.Component<{auth: boolean, getUser(): void}> {
   componentWillMount() {
-    auth.isSessionOpen();
+    this.props.getUser();
   }
   render() {
-    let authenticated = auth.isAutenticated();
     return (
       <div className="container" >
         <header className="header clearfix">
         <nav>
           <ul className="nav nav-pills float-right">
             <li className="nav-item">
-              <NavLink exact={true} className="nav-link" to="/">Home</NavLink>
+              <NavLink exact={true} className="nav-link" to="/" >Home</NavLink>
             </li>
-            <OptionallyDisplayed display={!authenticated} >
+            <OptionallyDisplayed display={!this.props.auth} >
               <li className="nav-item">
                 <NavLink className="nav-link" to="/register" >Sign up</NavLink>
               </li>
             </OptionallyDisplayed>
-            <OptionallyDisplayed display={!authenticated}>
+            <OptionallyDisplayed display={!this.props.auth}>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/login" >Log in</NavLink>
               </li>
             </OptionallyDisplayed>
-            <OptionallyDisplayed display={authenticated}>
+            <OptionallyDisplayed display={this.props.auth}>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/dashboard" >Dashboard</NavLink>
               </li>
             </OptionallyDisplayed>
-            <OptionallyDisplayed display={authenticated}>
+            <OptionallyDisplayed display={this.props.auth}>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/logout" >Log out</NavLink>
               </li>

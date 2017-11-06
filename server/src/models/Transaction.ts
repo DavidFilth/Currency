@@ -11,7 +11,7 @@ let transactionSchema = new Schema({
         type: Number,
         required: true
     },
-    user: {
+    author: {
         type: SchemaTypes.ObjectId,
         ref: "User",
         required: true

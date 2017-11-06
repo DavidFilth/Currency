@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router-dom';
 import * as React from 'react';
 
 export default class SideBar extends React.Component {
@@ -25,22 +26,16 @@ export default class SideBar extends React.Component {
                 <nav className="side-menu">
                     <ul className="nav">
                         <li>
-                            <a href="#"><span className="fa fa-user"/> Profile</a>
+                            <NavLink to="/dashboard/profile"><i className="fa fa-user"/> Profile</NavLink>
                         </li>
                         <li>
-                            <a href="#"><span className="fa fa-cog"/> Settings</a>
-                        </li>
-                        <li className="active">
-                            <a href="#"><span className="fa fa-credit-card"/> Billing</a>
+                            <NavLink to="/dashboard/settings"><i className="fa fa-cog"/> Settings</NavLink>
                         </li>
                         <li>
-                            <a href="#"><span className="fa fa-envelope"/> Messages</a>
+                            <NavLink to="/dashboard" ><i className="fa fa-credit-card"/> Accounts</NavLink>
                         </li>
                         <li>
-                            <a href="user-drive.html"><span className="fa fa-th"/> Drive</a>
-                        </li>
-                        <li>
-                            <a href="#"><span className="fa fa-clock-o"/> Reminders</a>
+                            <NavLink to="/dashboard/currency"><i className="fa fa-money"/> Currency</NavLink>
                         </li>
                     </ul>
                 </nav>

@@ -16,7 +16,10 @@ class JWTStrategy {
         return new Strategy(this.options, cb);
     }
     public getToken(user: __CustomTypes.User) {
-        return 'JWT ' + jwt.sign(user.getPlainUser(user), JWT_SECRET, {expiresIn: 300});
+        return 'JWT ' + jwt.sign(user, JWT_SECRET, {expiresIn: 300});
+    }
+    public getUser(token: string) {
+        return jwt.decode(token);
     }
 }
 export default new JWTStrategy();

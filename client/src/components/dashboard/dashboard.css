@@ -31,7 +31,7 @@
     margin-bottom: 10px
 }
 
-.view-account .side-bar .user-info .meta li span {
+.view-account .side-bar .user-info .meta li i {
     display: inline-block;
     width: 100px;
     margin-right: 5px;

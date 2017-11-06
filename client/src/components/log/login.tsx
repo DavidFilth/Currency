@@ -1,10 +1,8 @@
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { run, ruleRunnner } from '../../services/validation';
-import * as rules from '../../services/validation/rules';
+import { run, ruleRunnner } from '../../util/validation';
+import * as rules from '../../util/validation/rules';
 import * as update from 'immutability-helper';
-import userApi from '../../services/api/user';
 import InputField from '../util/inputField';
-import auth from '../../services/auth';
 import * as React from 'react';
 
 const fieldValidations = [
@@ -21,16 +19,13 @@ class Login extends React.Component<RouteComponentProps<{}>, __CustomTypes.Login
         this.state = {
             isInvalid: true,
             validationErrors: {},
-            value: {
+            form: {
                 email: '',
                 password: ''
             }
         };
     }
     componentWillMount() {
-        if (auth.isAutenticated()) {
-            this.props.history.push('/dashboard');
-        }
         let validators = run(this.state, fieldValidations);
         this.setState({
             validationErrors: validators,
@@ -43,26 +38,20 @@ class Login extends React.Component<RouteComponentProps<{}>, __CustomTypes.Login
     handleFieldChanged(field: string) {
         return (e: React.ChangeEvent<HTMLInputElement>) => {
             let newState = update(this.state, {
-                value: {
+                form: {
                     [field]: {$set: e.target.value}
                 }
             });
-            newState.validationErrors = run(newState.value, fieldValidations);
+            newState.validationErrors = run(newState.form, fieldValidations);
             newState.isInvalid = Object.keys(newState.validationErrors).length > 0;
             this.setState(newState);
         };
     }
     handleSubmitClicked(e: React.UIEvent<HTMLFormElement>) {
-        userApi.login(this.state.value).subscribe((res) => {
-            if (res.token) {
-                auth.authenticate(res.token.slice(4));
-                this.props.history.push('/dashboard');
-            }
-        });
         e.preventDefault();
     }
     render() {
-        let { email, password } = this.state.value;
+        let { email, password } = this.state.form;
         return (
             <div className="container">
                 <form 

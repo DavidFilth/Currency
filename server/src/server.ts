@@ -1,6 +1,6 @@
+import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
 import * as bodyParser from 'body-parser';
-import * as mongoose from 'mongoose';
 import { MONGO_URI } from './const';
 import * as express from 'express';
 import * as helmet from 'helmet';
@@ -8,11 +8,14 @@ import router from './routers';
 import * as cors from 'cors';
 import auth from './auth';
 
+let mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
 // import Routers
 import userRouter from './routers/userRouter';
 
 // import Models
 import User from './models/User';
+
 // Server class
 class Server {
     public app : express.Application;
@@ -24,7 +27,7 @@ class Server {
         // Connection to the DB
         mongoose.connect( MONGO_URI, {
             useMongoClient: true
-        }, (err) => {
+        }, (err: Error) => {
             if(err){
                 console.error(err);
             } else{
@@ -38,6 +41,7 @@ class Server {
         this.app.use(compression());
         this.app.use(helmet());
         this.app.use(cors());
+        this.app.use(cookieParser());
         // Authentication Set Up
         this.app.use(auth);
         // Router handler

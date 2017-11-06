@@ -1,6 +1,7 @@
+import AccountList from './accountList';
 import * as React from 'react';
 
-export default class AccountList extends React.Component {
+export default class Account extends React.Component {
     render() {
         return (
             <div className="content-panel">
@@ -12,9 +13,7 @@ export default class AccountList extends React.Component {
                         </button>
                     </div>
                 </div>
-                <div className="drive-wrapper drive-grid-view">
-                    You have not created any account
-                </div>
+                <AccountList/>
             </div>
         );
     }

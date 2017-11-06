@@ -1,10 +1,8 @@
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { run, ruleRunnner } from '../../services/validation';
-import * as rules from '../../services/validation/rules';
+import { run, ruleRunnner } from '../../util/validation';
+import * as rules from '../../util/validation/rules';
 import * as update from 'immutability-helper';
-import userApi from '../../services/api/user';
+import { withRouter } from 'react-router-dom';
 import Input from '../util/inputField';
-import auth from '../../services/auth';
 import * as React from 'react';
 
 let fieldValidations: __CustomTypes.Runner[] = [
@@ -14,11 +12,11 @@ let fieldValidations: __CustomTypes.Runner[] = [
     ruleRunnner('confirmPass', 'Confirmation', rules.required, rules.mustMatch('password', 'Password'))
 ];
 
-class SignUp extends React.Component<RouteComponentProps<{}>, __CustomTypes.SignUpState> {
+class SignUp extends React.Component<{}, __CustomTypes.SignUpProps > {
     constructor() {
         super();
         this.state = {
-            value: {
+            form: {
                 name: '',
                 email: '',
                 password: '',
@@ -32,9 +30,6 @@ class SignUp extends React.Component<RouteComponentProps<{}>, __CustomTypes.Sign
         this.errorFor = this.errorFor.bind(this);
     }
     componentWillMount() {
-        if (auth.isAutenticated()) {
-            this.props.history.push('/dashboard');
-        }
         let validators = run(this.state, fieldValidations);
         this.setState({
             validationErrors: validators,
@@ -42,10 +37,6 @@ class SignUp extends React.Component<RouteComponentProps<{}>, __CustomTypes.Sign
         });
     }
     handleSubmitClicked(e: React.UIEvent<HTMLFormElement>) {
-        userApi.register(this.state.value).subscribe((res) => {
-            console.log('register: ', res);
-            this.props.history.push('/login');
-        });
         e.preventDefault();
     }
     errorFor(field: string) {
@@ -54,17 +45,17 @@ class SignUp extends React.Component<RouteComponentProps<{}>, __CustomTypes.Sign
     handleFieldChanged(field: string) {
         return (e: React.ChangeEvent<HTMLInputElement>) => {
             let newState = update(this.state, {
-                value: {
+                form: {
                     [field]: {$set: e.target.value}
                 }
             });
-            newState.validationErrors = run(newState.value, fieldValidations);
+            newState.validationErrors = run(newState.form, fieldValidations);
             newState.isInvalid = Object.keys(newState.validationErrors).length > 0;
             this.setState(newState);
         };
     }
     render() {
-        let { name, email, password, confirmPass } = this.state.value;
+        let { name, email, password, confirmPass } = this.state.form;
         return (
             <div className="container">
                 <form 
